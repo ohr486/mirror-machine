@@ -1,10 +1,10 @@
 # Mirror Machine
 
-Windows デスクトップアプリケーション（Electron）
+Windows および macOS デスクトップアプリケーション（Electron）
 
 ## 概要
 
-このリポジトリは、Electronを使用したWindowsデスクトップアプリケーションです。基本的なアプリケーション構造とビルド設定が含まれています。
+このリポジトリは、Electronを使用したWindows および macOS デスクトップアプリケーションです。基本的なアプリケーション構造とビルド設定が含まれています。
 
 ## 開発環境のセットアップ
 
@@ -36,6 +36,12 @@ npm run dev
 ```bash
 # Windows用のインストーラーとポータブル版を作成
 npm run win-dist
+
+# macOS用のDMGとZIPを作成
+npm run mac-dist
+
+# 両方のプラットフォーム用にビルド
+npm run dist
 ```
 
 ビルドされたアプリケーションは `dist` ディレクトリに出力されます。

@@ -1,5 +1,5 @@
 {
-  "name": "electron-windows-app",
+  "name": "mirror-machine",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
@@ -7,24 +7,26 @@
     "dev": "NODE_ENV=development electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "win-dist": "electron-builder --windows"
+    "win-dist": "electron-builder --windows",
+    "mac-dist": "electron-builder --mac"
   },
   "keywords": [
     "electron",
     "windows",
+    "macos",
     "desktop"
   ],
   "author": "",
   "license": "ISC",
-  "description": "Windows desktop application built with Electron",
+  "description": "Desktop application built with Electron for Windows and macOS",
   "devDependencies": {
     "electron": "^35.2.0",
     "electron-builder": "^26.0.12",
     "electron-winstaller": "^5.4.0"
   },
   "build": {
-    "appId": "com.example.electron-windows-app",
-    "productName": "Electron Windows App",
+    "appId": "com.example.mirror-machine",
+    "productName": "Mirror Machine",
     "directories": {
       "output": "dist"
     },
@@ -34,6 +36,14 @@
         "portable"
       ],
       "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.utilities"
     }
   },
   "dependencies": {
