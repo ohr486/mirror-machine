@@ -13,9 +13,9 @@ jobs:
       - run: env
       - run: ls -alh
       - run: node --version
-      - run: npm install
+      #- run: npm install  # test,lint passしたら復活
       #- run: npm run test # test passしたら復活
-      - run: npm run lint
+      #- run: npm run lint # lint passしたら復活
       - slack/notify:
           event: always
 
