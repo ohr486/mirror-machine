@@ -46,6 +46,22 @@ npm run dist
 
 ビルドされたアプリケーションは `dist` ディレクトリに出力されます。
 
+## テストとリント
+
+```bash
+# テストを実行
+npm test
+
+# テストをウォッチモードで実行（変更を監視）
+npm run test:watch
+
+# リントを実行
+npm run lint
+
+# リントを実行して自動修正
+npm run lint:fix
+```
+
 ## プロジェクト構造
 
 ```
@@ -56,7 +72,12 @@ mirror-machine/
 │   ├── renderer.js     # レンダラープロセスのスクリプト
 │   ├── preload.js      # プリロードスクリプト
 │   └── styles.css      # スタイルシート
+├── __tests__/          # テストファイル
+│   ├── main.test.js    # メインプロセスのテスト
+│   └── renderer.test.js # レンダラープロセスのテスト
 ├── main.js             # メインプロセスのスクリプト
 ├── package.json        # プロジェクト設定
+├── .eslintrc.js        # ESLint設定
+├── jest.config.js      # Jestテスト設定
 └── README.md           # このファイル
 ```
