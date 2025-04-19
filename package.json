@@ -1,0 +1,42 @@
+{
+  "name": "electron-windows-app",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "win-dist": "electron-builder --windows"
+  },
+  "keywords": [
+    "electron",
+    "windows",
+    "desktop"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Windows desktop application built with Electron",
+  "devDependencies": {
+    "electron": "^35.2.0",
+    "electron-builder": "^26.0.12",
+    "electron-winstaller": "^5.4.0"
+  },
+  "build": {
+    "appId": "com.example.electron-windows-app",
+    "productName": "Electron Windows App",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    }
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}
