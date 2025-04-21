@@ -1,13 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
-try {
-  if (require('electron-squirrel-startup')) {
-    app.quit();
-  }
-} catch (error) {
-  console.error('Error loading electron-squirrel-startup:', (error as Error).message);
-}
 
 const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
@@ -30,9 +23,6 @@ const createWindow = (): void => {
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
 });
 
 app.on('activate', () => {
