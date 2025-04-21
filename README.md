@@ -1,10 +1,10 @@
 # Mirror Machine
 
-Windows および macOS デスクトップアプリケーション（Electron）
+macOS デスクトップアプリケーション（Electron）
 
 ## 概要
 
-このリポジトリは、Electronを使用したWindows および macOS デスクトップアプリケーションです。基本的なアプリケーション構造とビルド設定が含まれています。
+このリポジトリは、Electronを使用したmacOSデスクトップアプリケーションです。基本的なアプリケーション構造とビルド設定が含まれています。
 
 ## 開発環境のセットアップ
 
@@ -34,13 +34,7 @@ npm run dev
 ## ビルド
 
 ```bash
-# Windows用のインストーラーとポータブル版を作成
-npm run win-dist
-
 # macOS用のDMGとZIPを作成
-npm run mac-dist
-
-# 両方のプラットフォーム用にビルド
 npm run dist
 ```
 
@@ -73,11 +67,12 @@ mirror-machine/
 │   ├── preload.js      # プリロードスクリプト
 │   └── styles.css      # スタイルシート
 ├── __tests__/          # テストファイル
-│   ├── main.test.js    # メインプロセスのテスト
-│   └── renderer.test.js # レンダラープロセスのテスト
-├── main.js             # メインプロセスのスクリプト
+│   ├── main.test.ts    # メインプロセスのテスト
+│   └── renderer.test.ts # レンダラープロセスのテスト
+├── main.ts             # メインプロセスのスクリプト
 ├── package.json        # プロジェクト設定
 ├── .eslintrc.js        # ESLint設定
 ├── jest.config.js      # Jestテスト設定
+├── tsconfig.json       # TypeScript設定
 └── README.md           # このファイル
 ```
