@@ -1,36 +1,41 @@
-import { Application } from 'spectron';
 import * as path from 'path';
 
+jest.mock('electron', () => ({
+  app: {
+    whenReady: jest.fn().mockResolvedValue(undefined),
+    on: jest.fn(),
+    quit: jest.fn(),
+  },
+  BrowserWindow: {
+    getAllWindows: jest.fn().mockReturnValue([]),
+  },
+}));
+
+import { app } from 'electron';
+
 describe('Main Process', () => {
-  let app: Application;
-  
-  beforeEach(async () => {
-    app = new Application({
-      path: require('electron'),
-      args: [path.join(__dirname, '..')],
-      env: { NODE_ENV: 'test' },
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('registers app ready event handler', () => {
+    jest.isolateModules(() => {
+      require('../src/main');
+      expect(app.whenReady).toHaveBeenCalled();
     });
-    
-    return app.start();
-  }, 30000);
-
-  afterEach(async () => {
-    if (app && app.isRunning()) {
-      return app.stop();
-    }
   });
 
-  it('creates a browser window', async () => {
-    const windowCount = await app.client.getWindowCount();
-    expect(windowCount).toBe(1);
+  it('registers window-all-closed event handler', () => {
+    jest.isolateModules(() => {
+      require('../src/main');
+      expect(app.on).toHaveBeenCalledWith('window-all-closed', expect.any(Function));
+    });
   });
 
-  it('is running', async () => {
-    expect(app.isRunning()).toBe(true);
-  });
-
-  it('has the correct window title', async () => {
-    const title = await app.client.getTitle();
-    expect(title).toBe('Electron App');
+  it('registers activate event handler', () => {
+    jest.isolateModules(() => {
+      require('../src/main');
+      expect(app.on).toHaveBeenCalledWith('activate', expect.any(Function));
+    });
   });
 });

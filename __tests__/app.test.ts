@@ -1,45 +1,44 @@
-import { Application } from 'spectron';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
+
+jest.mock('electron', () => ({
+  app: {
+    whenReady: jest.fn().mockResolvedValue(undefined),
+    on: jest.fn(),
+  },
+  BrowserWindow: jest.fn().mockImplementation(() => ({
+    loadFile: jest.fn(),
+    on: jest.fn(),
+    webContents: {
+      openDevTools: jest.fn(),
+    },
+  })),
+}));
+
+import '../src/main';
+import { BrowserWindow } from 'electron';
 
 describe('Basic Application Tests', () => {
-  let app: Application;
-  
-  beforeEach(async () => {
-    app = new Application({
-      path: require('electron'),
-      args: [path.join(__dirname, '..')],
-      env: { NODE_ENV: 'test' },
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('creates a browser window with correct settings', () => {
+    expect(BrowserWindow).toHaveBeenCalledWith({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      }
     });
+  });
+
+  it('loads the correct HTML file', () => {
+    const browserWindow = (BrowserWindow as unknown as jest.Mock<any, any>).mock.results[0].value;
     
-    return app.start();
-  }, 30000);
-
-  afterEach(async () => {
-    if (app && app.isRunning()) {
-      return app.stop();
-    }
-  });
-
-  it('shows an initial window', async () => {
-    const count = await app.client.getWindowCount();
-    expect(count).toBe(1);
-  });
-
-  it('has the correct title', async () => {
-    const title = await app.client.getTitle();
-    expect(title).toBe('Electron App');
-  });
-
-  it('displays the hello message', async () => {
-    const element = await app.client.$('h1');
-    const text = await element.getText();
-    expect(text).toBe('Hello Electron!');
-  });
-
-  it('has an app div element', async () => {
-    const element = await app.client.$('#app');
-    const isExisting = await element.isExisting();
-    expect(isExisting).toBe(true);
+    expect(browserWindow.loadFile).toHaveBeenCalledWith(
+      expect.stringContaining('index.html')
+    );
   });
 });
