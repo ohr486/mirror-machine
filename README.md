@@ -53,6 +53,37 @@ mirror-machine/
 - `npm start` - アプリケーションを起動
 - `npm run build` - TypeScriptのコンパイル
 - `npm run watch` - TypeScriptの自動コンパイル（開発用）
+- `npm run lint` - ESLintによるコード検証
+- `npm run lint:fix` - ESLintによるコード検証と自動修正
+- `npm test` - Jestによるテスト実行
+
+## テストとリント
+
+### リント
+
+コードの品質を確保するために、ESLintを使用しています。以下のコマンドでリントを実行できます：
+
+```bash
+# リントを実行
+npm run lint
+
+# リントを実行して自動修正
+npm run lint:fix
+```
+
+### テスト
+
+Jestを使用してユニットテストを実行します。テストはElectronプロセスを起動せずに実行されます：
+
+```bash
+# テストを実行
+npm test
+```
+
+テストファイルは `__tests__` ディレクトリに配置されています：
+
+- `__tests__/main.test.js` - メインプロセスのテスト
+- `__tests__/renderer.test.js` - レンダラープロセスのテスト
 
 ## ライセンス
 
