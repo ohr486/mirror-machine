@@ -7,13 +7,16 @@ export default [
     ignores: ['node_modules/**', 'dist/**', 'package-lock.json']
   },
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
         project: './tsconfig.json',
+        ecmaFeatures: {
+          jsx: true
+        }
       },
       globals: {
         process: 'readonly',
