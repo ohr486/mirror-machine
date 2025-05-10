@@ -1,7 +1,7 @@
 /**
  * Main process tests using mocks to avoid launching Electron
  */
-const { describe, it, expect, beforeEach } = require('@jest/globals');
+import { describe, it, expect, beforeEach } from '@jest/globals';
 
 const mockOn = jest.fn();
 const mockQuit = jest.fn();

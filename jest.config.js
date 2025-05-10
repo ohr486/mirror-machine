@@ -8,7 +8,7 @@ module.exports = {
   testEnvironmentOptions: {
     url: 'http://localhost/'
   },
-  testMatch: ['**/__tests__/**/*.js'],
+  testMatch: ['**/__tests__/**/*.ts'],
   testPathIgnorePatterns: ['/node_modules/'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
