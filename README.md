@@ -74,8 +74,8 @@ npm test
 
 テストファイルは `__tests__` ディレクトリに配置されています：
 
-- `__tests__/main.test.js` - メインプロセスのテスト
-- `__tests__/renderer.test.js` - レンダラープロセスのテスト
+- `__tests__/main.test.ts` - メインプロセスのテスト
+- `__tests__/renderer.test.ts` - レンダラープロセスのテスト
 
 ## プロジェクト構造
 
@@ -104,4 +104,4 @@ ISC
 
 ## 作者
 
-ohr486 
+ohr486  
