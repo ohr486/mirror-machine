@@ -1,13 +1,13 @@
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import nodePlugin from 'eslint-plugin-node';
+const tseslint = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
+const nodePlugin = require('eslint-plugin-node');
 
-export default [
+module.exports = [
   {
-    ignores: ['node_modules/**', 'dist/**', 'package-lock.json']
+    ignores: ['node_modules/**', 'dist/**', 'package-lock.json', '__tests__/**', 'coverage/**']
   },
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
