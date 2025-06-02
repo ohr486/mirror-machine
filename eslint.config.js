@@ -4,10 +4,10 @@ import nodePlugin from 'eslint-plugin-node';
 
 export default [
   {
-    ignores: ['node_modules/**', 'dist/**', 'package-lock.json']
+    ignores: ['node_modules/**', 'dist/**', 'package-lock.json', '__tests__/**', 'coverage/**']
   },
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
