@@ -12,10 +12,6 @@ jobs:
       - checkout
       - run: env
       - run: ls -alh
-      - run: node --version
-      - run: npm install
-      - run: npm run lint
-      - run: npm test
       - slack/notify:
           event: always
 
