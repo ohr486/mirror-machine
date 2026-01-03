@@ -1,12 +1,12 @@
 {
   "feature_name": "react-ink-dev-environment",
   "created_at": "2026-01-03T00:00:00Z",
-  "updated_at": "2026-01-03T00:00:00Z",
+  "updated_at": "2026-01-04T02:00:00Z",
   "language": "ja",
-  "phase": "initialized",
+  "phase": "requirements-generated",
   "approvals": {
     "requirements": {
-      "generated": false,
+      "generated": true,
       "approved": false
     },
     "design": {
