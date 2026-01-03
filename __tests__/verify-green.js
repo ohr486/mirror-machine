@@ -5,48 +5,9 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { test, expect, getTestStats } from './test-helpers.js';
 
 console.log('Running GREEN phase verification...\n');
-
-let failures = 0;
-let passes = 0;
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`✅ PASS: ${name}`);
-    passes++;
-  } catch (error) {
-    console.log(`❌ FAIL: ${name}`);
-    console.log(`   ${error.message}`);
-    failures++;
-  }
-}
-
-function expect(value) {
-  return {
-    toBe(expected) {
-      if (value !== expected) {
-        throw new Error(`Expected ${expected}, got ${value}`);
-      }
-    },
-    toBeDefined() {
-      if (value === undefined) {
-        throw new Error('Expected value to be defined');
-      }
-    },
-    toContain(item) {
-      if (!Array.isArray(value) || !value.includes(item)) {
-        throw new Error(`Expected array to contain ${item}, but received ${JSON.stringify(value)}`);
-      }
-    },
-    toMatch(regex) {
-      if (!regex.test(value)) {
-        throw new Error(`Expected ${value} to match ${regex}`);
-      }
-    }
-  };
-}
 
 // Test package.json
 const packageJsonPath = join(process.cwd(), 'package.json');
@@ -126,6 +87,7 @@ test('tsconfig.json excludes build directories', () => {
   expect(tsconfig.exclude).toContain('coverage');
 });
 
+const { passes, failures } = getTestStats();
 console.log(`\n📊 Results: ${passes} passed, ${failures} failed`);
 console.log(failures === 0 ? '✅ GREEN phase complete!' : '❌ GREEN phase failed');
 

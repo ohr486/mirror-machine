@@ -5,43 +5,9 @@
 
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { test, expect, getTestStats } from './test-helpers.js';
 
 console.log('Running GREEN phase verification for Task 1.2...\n');
-
-let failures = 0;
-let passes = 0;
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`✅ PASS: ${name}`);
-    passes++;
-  } catch (error) {
-    console.log(`❌ FAIL: ${name}`);
-    console.log(`   ${error.message}`);
-    failures++;
-  }
-}
-
-function expect(value) {
-  return {
-    toBe(expected) {
-      if (value !== expected) {
-        throw new Error(`Expected ${expected}, got ${value}`);
-      }
-    },
-    toBeDefined() {
-      if (value === undefined) {
-        throw new Error('Expected value to be defined');
-      }
-    },
-    toContain(item) {
-      if (!Array.isArray(value) || !value.includes(item)) {
-        throw new Error(`Expected array ${JSON.stringify(value)} to contain ${item}`);
-      }
-    }
-  };
-}
 
 // Test .eslintrc.json
 const eslintrcPath = join(process.cwd(), '.eslintrc.json');
@@ -107,6 +73,7 @@ test('.prettierrc.json uses 2 spaces for indentation', () => {
   expect(prettierrc.useTabs).toBe(false);
 });
 
+const { passes, failures } = getTestStats();
 console.log(`\n📊 Results: ${passes} passed, ${failures} failed`);
 console.log(failures === 0 ? '✅ GREEN phase complete!' : '❌ GREEN phase failed');
 
