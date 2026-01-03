@@ -1,6 +1,6 @@
 /**
  * .eslintrc.json validation tests
- * Requirements: 5.1, 5.2, 5.3, 5.5, 6.1, 6.2, 6.4
+ * Requirements: ESLint configuration validation
  */
 
 import { readFileSync, existsSync } from 'fs';
