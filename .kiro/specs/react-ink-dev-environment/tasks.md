@@ -5,7 +5,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
 
 ## Tasks
 
-- [ ] 1. プロジェクト基盤とパッケージ管理のセットアップ
+- [x] 1. プロジェクト基盤とパッケージ管理のセットアップ
 - [x] 1.1 (P) package.jsonとTypeScript設定を作成
   - package.jsonでプロジェクトメタデータ、依存関係（React Ink、AWS SDK、winston等）、npmスクリプト（dev、test、lint、format）を定義
   - tsconfig.jsonでstrictモード、React JSX変換、Node.js型定義を設定
@@ -27,22 +27,22 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - logsターゲットで`logs/app.log`をtail表示
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 3.12_
 
-- [ ] 3. docker-composeとMinIOエミュレーション環境の構築
-- [ ] 3.1 docker-compose.ymlでMinIOコンテナを定義
+- [x] 3. docker-composeとMinIOエミュレーション環境の構築
+- [x] 3.1 docker-compose.ymlでMinIOコンテナを定義
   - MinIO最新イメージを使用し、ポート9000（S3 API）と9001（Web UI）を公開
   - 環境変数でMINIO_ROOT_USER/PASSWORDを設定（minioadmin）
   - minio_dataボリュームでデータ永続化を設定
   - healthcheckでMinIOの稼働状態を監視（curl /minio/health/live）
   - _Requirements: 10.1, 10.2, 10.3, 10.7_
 
-- [ ] 3.2 MinIO初期セットアップスクリプトを作成
+- [x] 3.2 MinIO初期セットアップスクリプトを作成
   - scripts/init-minio.shでdocker execを使用してMinIOコンテナ内のmcコマンドを実行
   - mcでローカルエイリアス設定（http://localhost:9000）
   - デフォルトバケット（my-app-bucket）を作成（--ignore-existingオプション）
   - バケット一覧を表示して確認
   - _Requirements: 10.8_
 
-- [ ] 3.3 Makefileにdocker-compose関連ターゲットを追加
+- [x] 3.3 Makefileにdocker-compose関連ターゲットを追加
   - up、down、pull、build、init-minioターゲットを実装
   - upターゲットはpullを依存関係に含め、初回実行時にイメージをダウンロード
   - init-minioターゲットはscripts/init-minio.shを実行
