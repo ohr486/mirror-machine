@@ -28,13 +28,13 @@ init-minio: ## MinIO初期セットアップ
 	./scripts/init-minio.sh
 
 pull: ## docker-composeイメージをpull
-	docker-compose pull
+	docker compose pull
 
 build: ## docker-composeイメージをbuild（将来のカスタムビルド用）
-	docker-compose build
+	docker compose build
 
 up: pull ## docker-compose起動（初回はpull実行）
-	docker-compose up -d
+	docker compose up -d
 
 down: ## docker-compose停止
-	docker-compose down
+	docker compose down
