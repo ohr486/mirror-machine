@@ -37,7 +37,7 @@ function expect(value) {
     },
     toContain(item) {
       if (!Array.isArray(value) || !value.includes(item)) {
-        throw new Error(`Expected array to contain ${item}`);
+        throw new Error(`Expected array ${JSON.stringify(value)} to contain ${item}`);
       }
     }
   };
