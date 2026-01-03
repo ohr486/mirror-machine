@@ -171,15 +171,18 @@ flowchart TD
 | Component | Domain/Layer | Intent | Req Coverage | Key Dependencies (P0/P1) | Contracts |
 |-----------|--------------|--------|--------------|--------------------------|-----------|
 | DevContainerConfig | Infrastructure | DevContainer環境定義 | 1.1-1.5 | Node.js 20 LTS image (P0) | Config File |
+| PostStartScript | Infrastructure | MinIO自動起動とhealthcheck | 1.4, 10.3 | docker-compose (P0) | Shell Script |
 | DockerComposeConfig | Infrastructure | MinIO起動定義 | 10.1-10.3, 10.7 | MinIO image (P0) | Config File |
 | MinIOSetup | Infrastructure | 初期バケット作成 | 10.8 | MinIO Client mc (P0) | Shell Script |
+| EnvConfig | Infrastructure | 環境変数定義サンプル | 10.4, 10.5 | - | Config File |
 | Makefile | Build Toolchain | タスク統合 | 3.1-3.12 | npm (P0), node_modules (P0) | CLI Interface |
 | PackageManifest | Build Toolchain | 依存関係定義 | 2.1, 8.1-8.5 | npm (P0) | Config File |
 | TSConfig | Build Toolchain | TypeScript設定 | 7.1-7.5 | TypeScript (P0) | Config File |
 | ESLintConfig | Build Toolchain | リント設定 | 5.1-5.5 | ESLint (P0), eslint-config-prettier (P0) | Config File |
 | PrettierConfig | Build Toolchain | フォーマッタ設定 | 6.1-6.5 | Prettier (P0) | Config File |
 | JestConfig | Testing | テスト設定 | 4.1 | Jest (P0), ts-jest (P0) | Config File |
-| AppEntryPoint | Application | TUIアプリエントリーポイント | 2.3, 9.1-9.5 | React Ink (P0), AWS SDK (P1) | TypeScript Module |
+| AppConfig | Application | 環境変数バリデーションと設定 | 10.4, 10.5, 10.6 | - | TypeScript Module |
+| AppEntryPoint | Application | TUIアプリエントリーポイント | 2.3, 9.1-9.5 | React Ink (P0), AWS SDK (P1), AppConfig (P0) | TypeScript Module |
 | README | Documentation | セットアップガイド | 11.1-11.7 | - | Markdown |
 
 ### Infrastructure
@@ -217,8 +220,15 @@ flowchart TD
       ]
     }
   },
+  "containerEnv": {
+    "AWS_ENDPOINT_URL": "http://localhost:9000",
+    "AWS_ACCESS_KEY_ID": "minioadmin",
+    "AWS_SECRET_ACCESS_KEY": "minioadmin",
+    "AWS_REGION": "ap-northeast-1",
+    "NODE_ENV": "development"
+  },
   "updateContentCommand": "npm install",
-  "postStartCommand": "echo 'DevContainer ready'",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "forwardPorts": [3000, 9000, 9001],
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind"
@@ -230,6 +240,62 @@ flowchart TD
 - Integration: `.devcontainer/devcontainer.json`に配置
 - Validation: VSCode/CursorでDevContainer起動時に自動検証
 - Risks: 初回起動時のイメージダウンロードに時間がかかる（README.mdに記載）
+- **環境変数自動設定**: containerEnvでMinIO接続用の環境変数をデフォルト設定
+- **post-start.sh**: MinIO自動起動とhealthcheckを実行（`.devcontainer/post-start.sh`に配置）
+
+#### PostStartScript
+
+| Field | Detail |
+|-------|--------|
+| Intent | DevContainer起動後にMinIOを自動起動し、healthcheck完了後に初期セットアップを実行 |
+| Requirements | 1.4, 10.3 |
+
+**Responsibilities & Constraints**
+- docker-compose up -dでMinIO起動
+- MinIO healthcheck完了待機（最大60秒）
+- healthcheck成功後、init-minio.sh実行
+- エラー発生時の明確なメッセージ出力
+
+**Dependencies**
+- Inbound: DevContainerConfig (P0) — postStartCommandから呼び出し
+- Outbound: docker-compose (P0) — MinIO起動
+- Outbound: MinIOSetup (P0) — 初期セットアップスクリプト
+
+**Contracts**: Shell Script [x]
+
+**Shell Script Interface**
+```bash
+#!/bin/bash
+# .devcontainer/post-start.sh
+
+set -e
+
+echo "🚀 Starting MinIO..."
+docker-compose up -d
+
+echo "⏳ Waiting for MinIO to be ready..."
+for i in {1..60}; do
+  if docker exec react-ink-minio curl -f http://localhost:9000/minio/health/live > /dev/null 2>&1; then
+    echo "✅ MinIO is ready!"
+    break
+  fi
+  if [ $i -eq 60 ]; then
+    echo "❌ MinIO healthcheck timeout"
+    exit 1
+  fi
+  sleep 1
+done
+
+echo "🔧 Initializing MinIO..."
+bash ./scripts/init-minio.sh
+
+echo "✅ Development environment ready!"
+```
+
+**Implementation Notes**
+- Integration: `.devcontainer/post-start.sh`に配置、実行権限付与（`chmod +x`）
+- Validation: DevContainer起動後、`docker ps`でMinIO起動確認、`http://localhost:9001`でWeb UI確認
+- Risks: docker-composeがホストマシンで未起動の場合エラー（README.mdに前提条件記載）
 
 #### DockerComposeConfig
 
@@ -322,6 +388,57 @@ echo "MinIO setup complete"
 - Integration: `scripts/`ディレクトリに配置、Makefileの`init-minio`ターゲットから実行
 - Validation: スクリプト実行後、`http://localhost:9001`でバケット存在確認
 - Risks: MinIO未起動時のエラーハンドリング必要（healthcheckと連携）
+
+#### EnvConfig
+
+| Field | Detail |
+|-------|--------|
+| Intent | 環境変数の例と説明を提供し、開発者が必要に応じてカスタマイズ可能にする |
+| Requirements | 10.4, 10.5 |
+
+**Responsibilities & Constraints**
+- 必要な環境変数の一覧と説明
+- ローカル開発用のデフォルト値提供
+- 本番環境用の設定例（機密情報はプレースホルダー）
+
+**Dependencies**
+- なし（参照用ドキュメント）
+
+**Contracts**: Config File [x]
+
+**Config File Structure**
+```bash
+# .env.example
+# 環境変数設定例 - このファイルを .env にコピーして使用（.env はgitignore対象）
+
+# S3接続設定
+# ローカル開発時: MinIOエンドポイントを指定
+# 本番環境: この変数を未設定にすることでAWS S3に接続
+AWS_ENDPOINT_URL=http://localhost:9000
+
+# MinIO認証情報（ローカル開発のみ）
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin
+
+# AWSリージョン
+AWS_REGION=ap-northeast-1
+
+# 実行環境
+NODE_ENV=development
+
+# 本番環境の例（.envに記載する場合）:
+# AWS_ENDPOINT_URL=  # 空または未設定でAWS S3を使用
+# AWS_ACCESS_KEY_ID=  # IAMロールまたは環境変数で設定
+# AWS_SECRET_ACCESS_KEY=  # IAMロールまたは環境変数で設定
+# AWS_REGION=ap-northeast-1
+# NODE_ENV=production
+```
+
+**Implementation Notes**
+- Integration: プロジェクトルートに`.env.example`として配置、`.env`は`.gitignore`に追加
+- Validation: README.mdに「初回セットアップ時は`.env.example`を`.env`にコピー」と記載
+- Risks: `.env`ファイルの誤コミット防止（`.gitignore`必須）
+- **Note**: DevContainerの`containerEnv`でデフォルト値が設定されるため、通常は`.env`ファイル不要。カスタマイズ時のみ使用
 
 ### Build Toolchain
 
@@ -418,7 +535,7 @@ down: ## docker-compose停止
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "mkdir -p logs && tsx watch src/cli.tsx 2>&1 | tee logs/app.log",
+    "dev": "tsx watch src/cli.tsx",
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -430,7 +547,8 @@ down: ## docker-compose停止
   "dependencies": {
     "ink": "^4.0.0",
     "react": "^18.0.0",
-    "@aws-sdk/client-s3": "^3.0.0"
+    "@aws-sdk/client-s3": "^3.0.0",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -455,6 +573,10 @@ down: ## docker-compose停止
 - Integration: プロジェクトルートに配置
 - Validation: `npm install`で依存関係解決確認
 - Risks: バージョン競合（package-lock.jsonでロック）
+- **ログ戦略**: TUI出力とデバッグログを分離
+  - `dev`スクリプトは標準出力を直接TUIに渡し、パフォーマンスを最大化
+  - デバッグログはwinstonでファイル出力（`logs/app.log`）
+  - `make logs`でファイルログをtail表示
 
 #### TSConfig
 
@@ -649,6 +771,110 @@ export default {
 
 ### Application Runtime
 
+#### AppConfig
+
+| Field | Detail |
+|-------|--------|
+| Intent | 環境変数のバリデーションと型安全な設定オブジェクトを提供 |
+| Requirements | 10.4, 10.5, 10.6 |
+
+**Responsibilities & Constraints**
+- 環境変数の読み込みと検証
+- S3接続設定の構築（ローカル/本番切り替え）
+- 設定エラーの明確なメッセージ提供
+- 型安全な設定インターフェース
+
+**Dependencies**
+- Outbound: winston (P1) — ロギング
+- External: process.env (P0) — 環境変数取得
+
+**Contracts**: TypeScript Module [x]
+
+**TypeScript Module Interface**
+```typescript
+// src/config.ts
+import winston from 'winston';
+
+export interface AppConfig {
+  aws: {
+    region: string;
+    endpoint?: string;
+    credentials?: {
+      accessKeyId: string;
+      secretAccessKey: string;
+    };
+  };
+  nodeEnv: string;
+}
+
+// ロガー設定
+export const logger = winston.createLogger({
+  level: process.env.DEBUG === 'true' ? 'debug' : 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'logs/app.log' }),
+  ],
+});
+
+export function loadConfig(): AppConfig {
+  const awsEndpoint = process.env.AWS_ENDPOINT_URL;
+  const awsRegion = process.env.AWS_REGION || 'ap-northeast-1';
+  const nodeEnv = process.env.NODE_ENV || 'development';
+
+  // ローカル開発環境（MinIO）の場合、認証情報が必要
+  if (awsEndpoint) {
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+
+    if (!accessKeyId || !secretAccessKey) {
+      throw new Error(
+        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing'
+      );
+    }
+
+    logger.info('Using local S3 emulator (MinIO)', { endpoint: awsEndpoint });
+
+    return {
+      aws: {
+        region: awsRegion,
+        endpoint: awsEndpoint,
+        credentials: {
+          accessKeyId,
+          secretAccessKey,
+        },
+      },
+      nodeEnv,
+    };
+  }
+
+  // 本番環境（AWS S3）の場合、IAMロールまたは環境変数から認証情報を取得
+  logger.info('Using AWS S3', { region: awsRegion });
+
+  return {
+    aws: {
+      region: awsRegion,
+    },
+    nodeEnv,
+  };
+}
+```
+
+**Preconditions**:
+- 環境変数が適切に設定されていること（DevContainerまたは`.env`）
+
+**Postconditions**:
+- 型安全なAppConfigオブジェクトが返される
+- 設定エラーの場合は明確な例外がスローされる
+
+**Implementation Notes**
+- Integration: `src/config.ts`に配置
+- Validation: 起動時に`loadConfig()`を実行し、エラー検証
+- Risks: 環境変数未設定時のエラーメッセージが不明瞭（バリデーションで対応）
+- **ロギング**: winstonで`logs/app.log`にログ出力、TUI出力とは分離
+
 #### AppEntryPoint
 
 | Field | Detail |
@@ -665,6 +891,7 @@ export default {
 - Inbound: npm run dev (P0) — tsx watch modeで起動
 - Outbound: React Ink (P0) — TUIレンダリング
 - Outbound: AWS SDK v3 (P1) — S3操作
+- Outbound: AppConfig (P0) — 設定管理とロギング
 
 **Contracts**: TypeScript Module [x]
 
@@ -674,6 +901,7 @@ export default {
 import React from 'react';
 import { render, Box, Text } from 'ink';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { loadConfig, logger } from './config.js';
 
 interface AppProps {
   name?: string;
@@ -684,24 +912,26 @@ const App: React.FC<AppProps> = ({ name = 'World' }) => {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    const config = loadConfig();
+    logger.info('Application started', { nodeEnv: config.nodeEnv });
+
     const s3Client = new S3Client({
-      region: process.env.AWS_REGION || 'ap-northeast-1',
-      endpoint: process.env.AWS_ENDPOINT_URL || undefined,
-      credentials: process.env.AWS_ENDPOINT_URL
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'minioadmin',
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'minioadmin',
-          }
-        : undefined,
+      region: config.aws.region,
+      endpoint: config.aws.endpoint,
+      credentials: config.aws.credentials,
     });
 
     const fetchBuckets = async () => {
       try {
+        logger.debug('Fetching S3 buckets...');
         const response = await s3Client.send(new ListBucketsCommand({}));
         const names = response.Buckets?.map(b => b.Name ?? 'unknown') ?? [];
         setBuckets(names);
+        logger.info('Buckets fetched successfully', { count: names.length });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        setError(errorMessage);
+        logger.error('Failed to fetch buckets', { error: errorMessage });
       }
     };
 
@@ -732,17 +962,20 @@ render(<App name="Developer" />);
 ```
 
 **Preconditions**:
-- MinIOが起動していること（docker-compose up）
-- 環境変数`AWS_ENDPOINT_URL=http://localhost:9000`が設定されていること（ローカル開発時）
+- MinIOが起動していること（PostStartScriptで自動起動）
+- 環境変数がDevContainerで自動設定されていること
 
 **Postconditions**:
 - TUIがstdoutに表示される
 - S3バケット一覧が取得・表示される
+- ログが`logs/app.log`に出力される
 
 **Implementation Notes**
 - Integration: `src/cli.tsx`に配置、`npm run dev`で実行
-- Validation: `AWS_ENDPOINT_URL=http://localhost:9000 npm run dev`でMinIO接続確認
-- Risks: MinIO未起動時のエラーメッセージが不明瞭（try-catchで対応）
+- Validation: DevContainer起動後、`make dev`でアプリ起動確認
+- Risks: MinIO未起動時のエラーメッセージが不明瞭（AppConfigのロギングで対応）
+- **設定管理**: AppConfigで環境変数を一元管理、ハードコード排除
+- **ロギング**: winstonでファイルログ出力、TUI出力とは分離
 
 ### Documentation
 
@@ -773,36 +1006,58 @@ render(<App name="Developer" />);
 1. Clone repository
 2. Open in Cursor/VSCode
 3. Reopen in Container
-4. `make up` (MinIO起動)
-5. `make init-minio` (初期セットアップ)
-6. `make dev` (アプリ起動)
+   - DevContainerが自動的に依存関係インストール、MinIO起動、初期セットアップを実行
+   - 初回起動は5-10分程度かかります
+4. `make dev` (アプリ起動)
+
+**すぐに開発開始**: DevContainer起動後、環境変数は自動設定済み。追加の手動セットアップは不要です。
 
 ## Available Commands
 - `make help` — コマンド一覧表示
+- `make dev` — 開発モード起動
 - `make test` — テスト実行
 - `make lint` — リント実行
 - `make format` — フォーマット実行
-- `make dev` — 開発モード起動
-- `make logs` — ログtail
-- `make cleanup` — クリーンアップ
-- `make pull` — docker-composeイメージをpull
-- `make build` — docker-composeイメージをbuild（カスタムビルド用）
-- `make up` — MinIO起動（自動的にpull実行）
+- `make logs` — ログtail（`logs/app.log`をtail表示）
+- `make cleanup` — クリーンアップ（node_modules、coverage等削除）
+- `make up` — MinIO起動（通常は自動起動されるため手動実行不要）
 - `make down` — MinIO停止
-- `make init-minio` — MinIO初期セットアップ
+- `make init-minio` — MinIO初期セットアップ（通常は自動実行されるため手動実行不要）
+
+## Environment Variables
+環境変数はDevContainerで自動設定されます。カスタマイズが必要な場合のみ：
+1. `.env.example`を`.env`にコピー
+2. 必要に応じて値を変更
+
+デフォルト設定（DevContainerで自動適用）:
+- `AWS_ENDPOINT_URL=http://localhost:9000` (MinIO)
+- `AWS_ACCESS_KEY_ID=minioadmin`
+- `AWS_SECRET_ACCESS_KEY=minioadmin`
+- `AWS_REGION=ap-northeast-1`
+- `NODE_ENV=development`
 
 ## React Ink Component Example
-[サンプルコード]
+[サンプルコード: src/cli.tsx参照]
 
 ## MinIO Configuration
 - Web UI: http://localhost:9001
 - S3 API: http://localhost:9000
 - Credentials: minioadmin / minioadmin
+- 自動作成バケット: `my-app-bucket`
+
+## Architecture Overview
+- **DevContainer**: Node.js 20 LTS、自動セットアップ
+- **MinIO**: ローカルS3エミュレーター（docker-compose）
+- **React Ink**: TUIフレームワーク
+- **Winston**: ファイルロガー（`logs/app.log`）
+- **TypeScript**: strict mode、型安全
 
 ## Troubleshooting
-- DevContainer起動が遅い → 初回は10分程度かかる場合あり
-- MinIO接続エラー → `make up`でコンテナ起動確認
-- TypeScript型エラー → `npm install`で依存関係再インストール
+- **DevContainer起動が遅い** → 初回は10分程度かかる場合あり（イメージダウンロード + MinIO起動）
+- **MinIO接続エラー** → DevContainer起動完了まで待機、または`make up`で手動起動
+- **TypeScript型エラー** → `npm install`で依存関係再インストール
+- **環境変数が読み込まれない** → DevContainer再起動、または`.env`ファイル確認
+- **ログが表示されない** → `make logs`でファイルログ確認、`logs/app.log`を直接確認
 ```
 
 **Implementation Notes**
