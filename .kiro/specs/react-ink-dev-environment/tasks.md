@@ -6,13 +6,13 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
 ## Tasks
 
 - [ ] 1. プロジェクト基盤とパッケージ管理のセットアップ
-- [ ] 1.1 (P) package.jsonとTypeScript設定を作成
+- [x] 1.1 (P) package.jsonとTypeScript設定を作成
   - package.jsonでプロジェクトメタデータ、依存関係（React Ink、AWS SDK、winston等）、npmスクリプト（dev、test、lint、format）を定義
   - tsconfig.jsonでstrictモード、React JSX変換、Node.js型定義を設定
   - package-lock.jsonでバージョン固定を保証
   - _Requirements: 2.1, 2.2, 7.1, 7.2, 7.3, 7.5, 8.1, 8.2, 8.4, 8.5, 9.1_
 
-- [ ] 1.2 (P) ESLintとPrettier設定を作成
+- [x] 1.2 (P) ESLintとPrettier設定を作成
   - .eslintrc.jsonでTypeScript/Reactルールセット、eslint-config-prettierとの統合を設定
   - .prettierrc.jsonでコードスタイル（セミコロン、シングルクォート、printWidth等）を定義
   - ESLintとPrettierが競合しない設定を保証

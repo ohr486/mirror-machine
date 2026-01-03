@@ -8,3 +8,18 @@
 .DS_Store
 Thumbs.db
 
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+coverage/
+.turbo/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
