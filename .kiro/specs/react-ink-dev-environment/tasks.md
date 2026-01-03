@@ -18,8 +18,8 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - ESLintとPrettierが競合しない設定を保証
   - _Requirements: 5.1, 5.2, 5.3, 5.5, 6.1, 6.2, 6.4_
 
-- [ ] 2. Makefileとビルドツールチェーンの実装
-- [ ] 2.1 Makefileで統一されたタスクインターフェースを提供
+- [x] 2. Makefileとビルドツールチェーンの実装
+- [x] 2.1 Makefileで統一されたタスクインターフェースを提供
   - test、lint、format、cleanup、dev、logsターゲットを実装
   - helpターゲットで利用可能なコマンド一覧を表示
   - 各ターゲットからnpm scriptsに委譲（例: `make test` → `npm test`）
