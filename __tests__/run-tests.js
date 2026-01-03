@@ -4,7 +4,7 @@
  * This will be replaced by Jest once package.json is created
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
