@@ -303,14 +303,17 @@ volumes:
 #!/bin/bash
 # scripts/init-minio.sh
 
+# MinIO CLIをdocker exec経由で実行（DevContainer内にmcをインストール不要）
+# MinIOコンテナ内のmcコマンドを使用
+
 # MinIO CLIエイリアス設定
-mc alias set local http://localhost:9000 minioadmin minioadmin
+docker exec react-ink-minio mc alias set local http://localhost:9000 minioadmin minioadmin
 
 # デフォルトバケット作成
-mc mb local/my-app-bucket --ignore-existing
+docker exec react-ink-minio mc mb local/my-app-bucket --ignore-existing
 
 # バケット一覧確認
-mc ls local
+docker exec react-ink-minio mc ls local
 
 echo "MinIO setup complete"
 ```
@@ -415,7 +418,7 @@ down: ## docker-compose停止
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "tsx watch src/cli.tsx",
+    "dev": "mkdir -p logs && tsx watch src/cli.tsx 2>&1 | tee logs/app.log",
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -682,12 +685,12 @@ const App: React.FC<AppProps> = ({ name = 'World' }) => {
 
   React.useEffect(() => {
     const s3Client = new S3Client({
-      region: 'us-east-1',
+      region: process.env.AWS_REGION || 'ap-northeast-1',
       endpoint: process.env.AWS_ENDPOINT_URL || undefined,
       credentials: process.env.AWS_ENDPOINT_URL
         ? {
-            accessKeyId: 'minioadmin',
-            secretAccessKey: 'minioadmin',
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'minioadmin',
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'minioadmin',
           }
         : undefined,
     });
@@ -835,7 +838,7 @@ render(<App name="Developer" />);
 | `AWS_ENDPOINT_URL` | string | No | undefined | S3エンドポイントURL（MinIO: `http://localhost:9000`） |
 | `AWS_ACCESS_KEY_ID` | string | Conditional | - | MinIO使用時: `minioadmin` |
 | `AWS_SECRET_ACCESS_KEY` | string | Conditional | - | MinIO使用時: `minioadmin` |
-| `AWS_REGION` | string | No | `us-east-1` | S3リージョン |
+| `AWS_REGION` | string | No | `ap-northeast-1` | S3リージョン（Tokyo） |
 | `NODE_ENV` | string | No | `development` | 実行環境（development/production） |
 
 **Consistency & Integrity**:
@@ -864,6 +867,8 @@ render(<App name="Developer" />);
 │   │   └── App.tsx
 │   └── __tests__/
 │       └── App.test.tsx
+├── logs/
+│   └── app.log
 └── README.md
 ```
 
