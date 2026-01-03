@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Minimal test runner to verify RED phase
- * This will be replaced by Jest once package.json is created
+ * Jest is already configured for the project; this script remains as a minimal RED phase verification helper.
  */
 
 import { existsSync } from 'fs';
