@@ -129,7 +129,6 @@ describe('DevContainer Configuration', () => {
         expect(Array.isArray(config.mounts)).toBe(true);
       }
       // mounts の存在は必須ではない
-      expect(true).toBe(true);
     });
   });
 });
