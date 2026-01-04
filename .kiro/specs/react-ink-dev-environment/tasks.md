@@ -58,7 +58,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - forwardPortsでポート3000、9000、9001を転送
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 10.4_
 
-- [ ] 4.2 post-start.shでMinIO自動起動と初期化を実装
+- [x] 4.2 post-start.shでMinIO自動起動と初期化を実装
   - docker-compose up -dでMinIO起動
   - healthcheck完了待機（最大60秒、curl /minio/health/liveでポーリング）
   - healthcheck成功後、scripts/init-minio.shを実行
@@ -66,7 +66,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - _Requirements: 1.4, 10.3, 10.8_
 
 - [ ] 5. 環境変数管理とアプリケーション設定
-- [ ] 5.1 (P) .env.exampleで環境変数のサンプルを提供
+- [x] 5.1 (P) .env.exampleで環境変数のサンプルを提供
   - AWS_ENDPOINT_URL、AWS_ACCESS_KEY_ID、AWS_SECRET_ACCESS_KEY、AWS_REGION、NODE_ENVの例を記載
   - ローカル開発用のデフォルト値（MinIO: http://localhost:9000）と本番環境用のコメント例を含む
   - README.mdに「DevContainerで自動設定されるため、通常は.envファイル不要」と記載
