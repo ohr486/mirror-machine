@@ -49,7 +49,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - _Requirements: 3.1, 10.3_
 
 - [ ] 4. DevContainerとインフラストラクチャ自動化
-- [ ] 4.1 DevContainer設定ファイルを作成
+- [x] 4.1 DevContainer設定ファイルを作成
   - .devcontainer/devcontainer.jsonでNode.js 20 LTSベースイメージを指定
   - customizationsでVSCode拡張機能（ESLint、Prettier、TypeScript）を自動インストール
   - containerEnvで環境変数（AWS_ENDPOINT_URL、AWS_ACCESS_KEY_ID等）をデフォルト設定

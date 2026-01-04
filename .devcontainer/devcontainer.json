@@ -1,0 +1,23 @@
+{
+  "name": "MirrorMachine",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:0-20",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next"
+      ]
+    }
+  },
+  "containerEnv": {
+    "AWS_ENDPOINT_URL": "http://localhost:9000",
+    "AWS_ACCESS_KEY_ID": "minioadmin",
+    "AWS_SECRET_ACCESS_KEY": "minioadmin",
+    "AWS_REGION": "ap-northeast-1",
+    "NODE_ENV": "development"
+  },
+  "updateContentCommand": "npm install",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "forwardPorts": [3000, 9000, 9001]
+}
