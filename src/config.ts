@@ -1,4 +1,6 @@
 import winston from 'winston';
+import { mkdirSync, existsSync } from 'fs';
+import { dirname } from 'path';
 
 export interface AppConfig {
   aws: {
@@ -13,7 +15,12 @@ export interface AppConfig {
 }
 
 /**
- * Application-wide logger instance.
+ * Cached logger instance, created lazily on first access.
+ */
+let _logger: winston.Logger | null = null;
+
+/**
+ * Creates and returns the application-wide logger instance.
  *
  * The logger is configured with:
  * - Log level: `debug` when the `DEBUG` environment variable is set to `'true'`,
@@ -21,14 +28,60 @@ export interface AppConfig {
  * - Format: JSON with an added timestamp for each log entry.
  * - Transport: writes all logs to the file `logs/app.log`.
  *
- * This logger should be imported and reused across the application so that all
- * components share consistent logging behavior and output destination.
+ * This function ensures the logger is created lazily on first access to avoid
+ * side effects during module initialization. The logs directory is automatically
+ * created if it doesn't exist.
+ *
+ * @returns {winston.Logger} The logger instance.
  */
-export const logger = winston.createLogger({
-  level: process.env.DEBUG === 'true' ? 'debug' : 'info',
-  format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-  transports: [new winston.transports.File({ filename: 'logs/app.log' })],
-});
+function getLogger(): winston.Logger {
+  if (!_logger) {
+    const logFile = 'logs/app.log';
+    const logDir = dirname(logFile);
+
+    // Ensure the logs directory exists
+    if (!existsSync(logDir)) {
+      mkdirSync(logDir, { recursive: true });
+    }
+
+    _logger = winston.createLogger({
+      level: process.env.DEBUG === 'true' ? 'debug' : 'info',
+      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+      transports: [new winston.transports.File({ filename: logFile })],
+    });
+  }
+  return _logger;
+}
+
+/**
+ * Application-wide logger instance.
+ *
+ * This logger is created lazily on first access to avoid side effects during
+ * module initialization. It should be imported and reused across the application
+ * so that all components share consistent logging behavior and output destination.
+ *
+ * The logs directory is automatically created if it doesn't exist.
+ */
+export const logger = {
+  get info(): winston.LeveledLogMethod {
+    return getLogger().info.bind(getLogger());
+  },
+  get error(): winston.LeveledLogMethod {
+    return getLogger().error.bind(getLogger());
+  },
+  get warn(): winston.LeveledLogMethod {
+    return getLogger().warn.bind(getLogger());
+  },
+  get debug(): winston.LeveledLogMethod {
+    return getLogger().debug.bind(getLogger());
+  },
+  get level(): string {
+    return getLogger().level;
+  },
+  get transports(): winston.transport[] {
+    return getLogger().transports;
+  },
+};
 
 /**
  * Loads the application configuration from environment variables.
