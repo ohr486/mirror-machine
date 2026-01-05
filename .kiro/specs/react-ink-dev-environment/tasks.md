@@ -72,7 +72,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - README.mdに「DevContainerで自動設定されるため、通常は.envファイル不要」と記載
   - _Requirements: 10.4, 10.5_
 
-- [ ] 5.2 src/config.tsで環境変数バリデーションと設定管理を実装
+- [x] 5.2 src/config.tsで環境変数バリデーションと設定管理を実装
   - AppConfigインターフェースで型安全な設定オブジェクトを定義（aws.region、aws.endpoint、aws.credentials、nodeEnv）
   - loadConfig()関数で環境変数を読み込み、バリデーション実施
   - AWS_ENDPOINT_URL設定時は認証情報（AWS_ACCESS_KEY_ID、AWS_SECRET_ACCESS_KEY）の存在を検証、未設定なら例外スロー
