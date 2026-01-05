@@ -48,7 +48,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - init-minioターゲットはscripts/init-minio.shを実行
   - _Requirements: 3.1, 10.3_
 
-- [ ] 4. DevContainerとインフラストラクチャ自動化
+- [x] 4. DevContainerとインフラストラクチャ自動化
 - [x] 4.1 DevContainer設定ファイルを作成
   - .devcontainer/devcontainer.jsonでNode.js 20 LTSベースイメージを指定
   - customizationsでVSCode拡張機能（ESLint、Prettier、TypeScript）を自動インストール
@@ -65,7 +65,7 @@ React Inkフレームワークを使用したTUIアプリケーション開発�
   - エラー発生時は明確なメッセージを出力（例: "MinIO healthcheck timeout"）
   - _Requirements: 1.4, 10.3, 10.8_
 
-- [ ] 5. 環境変数管理とアプリケーション設定
+- [x] 5. 環境変数管理とアプリケーション設定
 - [x] 5.1 (P) .env.exampleで環境変数のサンプルを提供
   - AWS_ENDPOINT_URL、AWS_ACCESS_KEY_ID、AWS_SECRET_ACCESS_KEY、AWS_REGION、NODE_ENVの例を記載
   - ローカル開発用のデフォルト値（MinIO: http://localhost:9000）と本番環境用のコメント例を含む
