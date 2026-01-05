@@ -41,6 +41,6 @@ describe('.env.example', () => {
     const content = readFileSync(envExamplePath, 'utf-8');
 
     // DevContainerで自動設定されることの説明
-    expect(content).toMatch(/\.env/);
+    expect(content).toMatch(/DevContainer.*自動設定/);
   });
 });
