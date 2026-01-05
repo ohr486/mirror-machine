@@ -15,7 +15,7 @@ export default {
     ],
   },
   testMatch: [
-    '**/__tests__/config/**/*.test.ts',
+    '**/__tests__/**/*.test.ts',
     '**/__tests__/**/*.spec.ts',
     '**/src/**/__tests__/**/*.test.ts',
   ],
