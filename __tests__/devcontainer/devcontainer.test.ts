@@ -34,10 +34,18 @@ describe('DevContainer Configuration', () => {
       expect(config.name).toContain('MirrorMachine');
     });
 
-    test('Node.js 20 LTS ベースイメージを使用している', () => {
-      expect(config.image).toBeDefined();
-      expect(config.image).toContain('typescript-node');
-      expect(config.image).toContain('20');
+    test('docker-composeファイルを使用している', () => {
+      expect(config.dockerComposeFile).toBeDefined();
+      expect(config.dockerComposeFile).toContain('docker-compose.yml');
+    });
+
+    test('devcontainerサービスを使用している', () => {
+      expect(config.service).toBe('devcontainer');
+    });
+
+    test('workspaceFolderが設定されている', () => {
+      expect(config.workspaceFolder).toBeDefined();
+      expect(config.workspaceFolder).toContain('/workspaces/');
     });
   });
 
@@ -69,7 +77,7 @@ describe('DevContainer Configuration', () => {
     });
 
     test('AWS_ENDPOINT_URL が MinIO エンドポイントに設定されている', () => {
-      expect(config.containerEnv.AWS_ENDPOINT_URL).toBe('http://localhost:9000');
+      expect(config.containerEnv.AWS_ENDPOINT_URL).toBe('http://minio:9000');
     });
 
     test('AWS_ACCESS_KEY_ID が設定されている', () => {
