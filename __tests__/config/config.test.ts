@@ -46,27 +46,31 @@ describe('loadConfig', () => {
 
     test('AWS_ENDPOINT_URL設定時にAWS_ACCESS_KEY_IDが未設定の場合、例外をスローすること', () => {
       process.env.AWS_ENDPOINT_URL = 'http://localhost:9000';
+      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.AWS_SECRET_ACCESS_KEY = 'minioadmin';
 
       expect(() => loadConfig()).toThrow(
-        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing'
+        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing',
       );
     });
 
     test('AWS_ENDPOINT_URL設定時にAWS_SECRET_ACCESS_KEYが未設定の場合、例外をスローすること', () => {
       process.env.AWS_ENDPOINT_URL = 'http://localhost:9000';
       process.env.AWS_ACCESS_KEY_ID = 'minioadmin';
+      delete process.env.AWS_SECRET_ACCESS_KEY;
 
       expect(() => loadConfig()).toThrow(
-        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing'
+        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing',
       );
     });
 
     test('AWS_ENDPOINT_URL設定時に両方の認証情報が未設定の場合、例外をスローすること', () => {
       process.env.AWS_ENDPOINT_URL = 'http://localhost:9000';
+      delete process.env.AWS_ACCESS_KEY_ID;
+      delete process.env.AWS_SECRET_ACCESS_KEY;
 
       expect(() => loadConfig()).toThrow(
-        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing'
+        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing',
       );
     });
   });

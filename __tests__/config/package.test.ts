@@ -36,7 +36,9 @@ describe('package.json', () => {
     expect(packageJson.scripts.lint).toBe('eslint . --ext .ts,.tsx');
     expect(packageJson.scripts['lint:fix']).toBe('eslint . --ext .ts,.tsx --fix');
     expect(packageJson.scripts.format).toBe('prettier --write "src/**/*.{ts,tsx,json,md}"');
-    expect(packageJson.scripts['format:check']).toBe('prettier --check "src/**/*.{ts,tsx,json,md}"');
+    expect(packageJson.scripts['format:check']).toBe(
+      'prettier --check "src/**/*.{ts,tsx,json,md}"',
+    );
   });
 
   test('should have React Ink dependencies', () => {

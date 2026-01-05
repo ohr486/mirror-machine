@@ -31,7 +31,7 @@ export function loadConfig(): AppConfig {
 
     if (!accessKeyId || !secretAccessKey) {
       throw new Error(
-        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing'
+        'AWS_ENDPOINT_URL is set but AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is missing',
       );
     }
 

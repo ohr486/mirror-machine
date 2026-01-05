@@ -33,7 +33,9 @@ describe('.eslintrc.json', () => {
     expect(eslintrc.extends).toBeDefined();
     expect(eslintrc.extends).toContain('eslint:recommended');
     expect(eslintrc.extends).toContain('plugin:@typescript-eslint/recommended');
-    expect(eslintrc.extends).toContain('plugin:@typescript-eslint/recommended-requiring-type-checking');
+    expect(eslintrc.extends).toContain(
+      'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    );
     expect(eslintrc.extends).toContain('plugin:react/recommended');
     expect(eslintrc.extends).toContain('plugin:react-hooks/recommended');
     expect(eslintrc.extends).toContain('plugin:prettier/recommended');
